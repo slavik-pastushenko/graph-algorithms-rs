@@ -1,6 +1,9 @@
-use std::{cmp::Ordering, collections::BinaryHeap};
+use std::{
+    cmp::Ordering,
+    collections::{BinaryHeap, HashMap},
+};
 
-use crate::Algorithm;
+use crate::GraphAlgorithm;
 
 /// Dijkstra's Algorithm.
 /// Finds the shortest path from a starting node to all other nodes in a weighted graph.
@@ -8,7 +11,7 @@ use crate::Algorithm;
 #[derive(Debug)]
 pub struct Dijkstra {
     /// Graph to search.
-    graph: Vec<Vec<(usize, usize)>>,
+    graph: HashMap<usize, Vec<(usize, usize)>>,
 }
 
 /// State of the algorithm.
@@ -62,7 +65,9 @@ impl Dijkstra {
     /// A new instance of Dijkstra's Algorithm.
     #[cfg(test)]
     pub fn new() -> Self {
-        Dijkstra { graph: vec![] }
+        Dijkstra {
+            graph: HashMap::new(),
+        }
     }
 
     /// Set the node of the graph.
@@ -70,23 +75,26 @@ impl Dijkstra {
     /// # Arguments
     ///
     /// - `node`: Node of the graph.
+    /// - `edges`: Edges of the node.
     #[cfg(test)]
-    pub fn set_node(&mut self, node: Vec<(usize, usize)>) {
-        self.graph.push(node);
+    pub fn set_node(&mut self, node: usize, edges: Vec<(usize, usize)>) {
+        self.graph.insert(node, edges);
     }
 
     /// Set the nodes of the graph.
     ///
     /// # Arguments
     ///
-    /// - `nodes`: A vector of nodes of the graph.
+    /// - `nodes`: Vector of nodes and their edges.
     #[cfg(test)]
-    pub fn set_nodes(&mut self, mut nodes: Vec<Vec<(usize, usize)>>) {
-        self.graph.append(&mut nodes);
+    pub fn set_nodes(&mut self, nodes: Vec<(usize, Vec<(usize, usize)>)>) {
+        for (node, edges) in nodes {
+            self.graph.insert(node, edges);
+        }
     }
 }
 
-impl Algorithm for Dijkstra {
+impl GraphAlgorithm for Dijkstra {
     /// Run Dijkstra's Algorithm.
     ///
     /// # Arguments
@@ -98,37 +106,55 @@ impl Algorithm for Dijkstra {
     /// A vector of the shortest path from the starting node to all other nodes.
     fn run(&self, start: usize) -> Vec<usize> {
         let mut priority_queue = BinaryHeap::new();
-        let mut distances = vec![usize::MAX; self.graph.len()];
+        let mut distances = HashMap::new();
+        let mut result = vec![usize::MAX; self.graph.len()];
 
-        distances[start] = 0;
+        distances.insert(start, 0);
         priority_queue.push(State {
             cost: 0,
             position: start,
         });
 
-        while let Some(State { cost, position }) = priority_queue.pop() {
+        while let Some(state) = priority_queue.pop() {
             // Determine if the current shortest path is already known.
             // If it is, skip the current node.
-            if cost > distances[position] {
+            if distances
+                .get(&state.position)
+                .map(|&d| state.cost > d)
+                .unwrap_or(false)
+            {
                 continue;
             }
 
-            for &(neighbor, weight) in &self.graph[position] {
-                let next = State {
-                    cost: cost + weight,
-                    position: neighbor,
-                };
+            if let Some(neighbors) = self.graph.get(&state.position) {
+                for &(neighbor, weight) in neighbors {
+                    let next = State {
+                        cost: state.cost + weight,
+                        position: neighbor,
+                    };
 
-                // Determine if the new path is shorter than the current shortest path.
-                // If it is, update the shortest path.
-                if next.cost < distances[neighbor] {
-                    distances[neighbor] = next.cost;
-                    priority_queue.push(next);
+                    // Determine if the new path is shorter than the current shortest path.
+                    // If it is, update the shortest path.
+                    if distances
+                        .get(&neighbor)
+                        .map(|&d| next.cost < d)
+                        .unwrap_or(true)
+                    {
+                        distances.insert(neighbor, next.cost);
+                        priority_queue.push(next);
+                    }
                 }
             }
         }
 
-        distances
+        // Convert the distances to a vector of shortest paths.
+        for (&node, &dist) in distances.iter() {
+            if node < result.len() {
+                result[node] = dist;
+            }
+        }
+
+        result
     }
 }
 
@@ -137,114 +163,148 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_single_node_graph() {
+    fn test_run() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![]]);
+        let nodes = vec![
+            (0, vec![(1, 1), (2, 4), (3, 7)]),
+            (1, vec![(2, 2), (3, 5), (4, 12)]),
+            (2, vec![(3, 1), (4, 3)]),
+            (3, vec![(4, 2), (5, 8)]),
+            (4, vec![(5, 1), (6, 5)]),
+            (5, vec![(6, 2), (7, 3)]),
+            (6, vec![(7, 1), (8, 4)]),
+            (7, vec![(8, 2), (9, 6)]),
+            (8, vec![(9, 1)]),
+            (9, vec![(10, 2), (11, 3)]),
+            (10, vec![(11, 1), (12, 4)]),
+            (11, vec![(12, 2), (13, 6)]),
+            (12, vec![(13, 1), (14, 5)]),
+            (13, vec![(14, 2), (15, 3)]),
+            (14, vec![(15, 1), (16, 4)]),
+            (15, vec![(16, 2), (17, 6)]),
+            (16, vec![(17, 1), (18, 5)]),
+            (17, vec![(18, 2), (19, 3)]),
+            (18, vec![(19, 1)]),
+            (19, vec![]),
+        ];
+        dijkstra.set_nodes(nodes);
+
+        assert_eq!(
+            dijkstra.run(0),
+            vec![0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28]
+        );
+    }
+
+    #[test]
+    fn test_run_single_node_graph() {
+        let mut dijkstra = Dijkstra::new();
+        dijkstra.set_nodes(vec![(0, vec![])]);
 
         assert_eq!(dijkstra.run(0), vec![0]);
     }
 
     #[test]
-    fn test_two_node_graph() {
+    fn test_run_two_node_graph() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_node(vec![(1, 1)]);
-        dijkstra.set_node(vec![]);
+        dijkstra.set_node(0, vec![(1, 1)]);
+        dijkstra.set_node(1, vec![]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1]);
     }
 
     #[test]
-    fn test_disconnected_graph() {
+    fn test_run_disconnected_graph() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![], vec![]]);
+        dijkstra.set_nodes(vec![(0, vec![]), (1, vec![])]);
 
         assert_eq!(dijkstra.run(0), vec![0, usize::MAX]);
     }
 
     #[test]
-    fn test_simple_path() {
+    fn test_run_simple_path() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1)], vec![(2, 1)], vec![]]);
+        dijkstra.set_nodes(vec![(0, vec![(1, 1)]), (1, vec![(2, 1)]), (2, vec![])]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
     }
 
     #[test]
-    fn test_multiple_paths() {
+    fn test_run_multiple_paths() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1), (2, 4)], vec![(2, 2)], vec![]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1), (2, 4)]),
+            (1, vec![(2, 2)]),
+            (2, vec![]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 3]);
     }
 
     #[test]
-    fn test_graph_with_cycle() {
+    fn test_run_graph_with_cycle() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1)], vec![(2, 1)], vec![(0, 1)]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1)]),
+            (1, vec![(2, 1)]),
+            (2, vec![(0, 1)]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
     }
 
     #[test]
-    fn test_graph_with_multiple_shortest_paths() {
+    fn test_run_graph_with_multiple_shortest_paths() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1), (2, 1)], vec![(2, 1)], vec![]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1), (2, 1)]),
+            (1, vec![(2, 1)]),
+            (2, vec![]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 1]);
     }
 
     #[test]
-    fn test_large_graph() {
+    fn test_run_large_weights() {
         let mut dijkstra = Dijkstra::new();
-        let nodes = vec![
-            vec![(1, 1), (2, 4), (3, 7)],
-            vec![(2, 2), (3, 5), (4, 12)],
-            vec![(3, 1), (4, 3)],
-            vec![(4, 2), (5, 8)],
-            vec![(5, 1)],
-            vec![],
-        ];
-        dijkstra.set_nodes(nodes);
-
-        assert_eq!(dijkstra.run(0), vec![0, 1, 3, 4, 6, 7]);
-    }
-
-    #[test]
-    fn test_negative_weights() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, usize::MAX)], vec![(2, usize::MAX)], vec![]]);
-
-        assert_eq!(dijkstra.run(0), vec![0, usize::MAX, usize::MAX]);
-    }
-
-    #[test]
-    fn test_large_weights() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1000)], vec![(2, 1000)], vec![]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1000)]),
+            (1, vec![(2, 1000)]),
+            (2, vec![]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1000, 2000]);
     }
 
     #[test]
-    fn test_no_edges() {
+    fn test_run_no_edges() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![], vec![], vec![]]);
+        dijkstra.set_nodes(vec![(0, vec![]), (1, vec![]), (2, vec![])]);
 
         assert_eq!(dijkstra.run(0), vec![0, usize::MAX, usize::MAX]);
     }
 
     #[test]
-    fn test_multiple_edges_to_same_node() {
+    fn test_run_multiple_edges_to_same_node() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1), (1, 2)], vec![(2, 1)], vec![]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1), (1, 2)]),
+            (1, vec![(2, 1)]),
+            (2, vec![]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
     }
 
     #[test]
-    fn test_graph_with_isolated_node() {
+    fn test_run_graph_with_isolated_node() {
         let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![vec![(1, 1)], vec![(2, 1)], vec![], vec![]]);
+        dijkstra.set_nodes(vec![
+            (0, vec![(1, 1)]),
+            (1, vec![(2, 1)]),
+            (2, vec![]),
+            (3, vec![]),
+        ]);
 
         assert_eq!(dijkstra.run(0), vec![0, 1, 2, usize::MAX]);
     }

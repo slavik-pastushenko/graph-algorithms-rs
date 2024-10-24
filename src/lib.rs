@@ -10,8 +10,8 @@
 mod dijkstra;
 
 /// A trait for graph search algorithms.
-pub trait Algorithm {
-    /// Run the algorithm.
+pub trait GraphAlgorithm {
+    /// Run the graph algorithm.
     ///
     /// # Arguments
     ///

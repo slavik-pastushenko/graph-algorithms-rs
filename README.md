@@ -9,7 +9,7 @@ Contributions are welcome to expand the set of algorithms and improve existing i
 [![test](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs/graph/badge.svg?token=9EL0F6725A)](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs)
 
-### Algorithms
+## Algorithms
 
 ### Dijkstra's Algorithm
 Dijkstra's algorithm finds the shortest path from a starting node to all other nodes in a weighted graph. It uses a priority queue to efficiently select the next node with the smallest distance.
