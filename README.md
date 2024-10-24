@@ -1,4 +1,4 @@
-# Graph Algorithms in Rust
+# Graph Algorithms
 
 A collection of graph algorithms implemented in Rust. This repository aims to provide efficient and easy-to-understand implementations of various graph algorithms for educational purposes and practical use. 
 
@@ -8,6 +8,7 @@ Contributions are welcome to expand the set of algorithms and improve existing i
 
 [![test](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs/graph/badge.svg?token=9EL0F6725A)](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs)
+[![License](https://img.shields.io/github/license/slavik-pastushenko/graph-algorithms-rs)](https://github.com/slavik-pastushenko/graph-algorithms-rs/blob/main/LICENSE)
 
 ## Algorithms
 

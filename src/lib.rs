@@ -1,12 +1,5 @@
 #![forbid(unsafe_code)]
 
-// A* Algorithm
-// Dijkstra's Algorithm
-// Breadth-First Search (BFS)
-// Depth-First Search (DFS)
-// Bellman-Ford Algorithm
-// Floyd-Warshall Algorithm
-
 mod dijkstra;
 
 /// A trait for graph search algorithms.

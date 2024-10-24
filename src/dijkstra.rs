@@ -7,7 +7,6 @@ use crate::GraphAlgorithm;
 
 /// Dijkstra's Algorithm.
 /// Finds the shortest path from a starting node to all other nodes in a weighted graph.
-/// Docs: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
 #[derive(Debug)]
 pub struct Dijkstra {
     /// Graph to search.
@@ -148,7 +147,7 @@ impl GraphAlgorithm for Dijkstra {
         }
 
         // Convert the distances to a vector of shortest paths.
-        for (&node, &dist) in distances.iter() {
+        for (node, dist) in distances.into_iter() {
             if node < result.len() {
                 result[node] = dist;
             }
