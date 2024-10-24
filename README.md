@@ -8,9 +8,9 @@ Contributions are welcome to expand the set of algorithms and improve existing i
 
 [![test](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml)
 [![release](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/release.yml/badge.svg?event=workflow_dispatch)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/release.yml)
-[![docs](https://docs.rs/graph-algorithms-cli/badge.svg)](https://docs.rs/graph-algorithms-cli)
-[![crate](https://img.shields.io/crates/v/graph-algorithms-cli.svg)](https://crates.io/crates/graph-algorithms-cli)
-![downloads](https://img.shields.io/crates/d/graph-algorithms-cli)
+[![docs](https://docs.rs/graph-algorithms-rs/badge.svg)](https://docs.rs/graph-algorithms-rs)
+[![crate](https://img.shields.io/crates/v/graph-algorithms-rs.svg)](https://crates.io/crates/graph-algorithms-rs)
+![downloads](https://img.shields.io/crates/d/graph-algorithms-rs)
 [![codecov](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs/graph/badge.svg?token=9EL0F6725A)](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs)
 [![License](https://img.shields.io/github/license/slavik-pastushenko/graph-algorithms-rs)](https://github.com/slavik-pastushenko/graph-algorithms-rs/blob/main/LICENSE)
 
@@ -52,7 +52,7 @@ Test the application:
 cargo test
 ```
 
-Run [clippy](https://github.com/rust-lang/rust-clippy):
+Run [clippy](https://github.com/rust-lang/rust-rsppy):
 
 ```bash
 cargo clippy --all-targets --all-features --no-deps -- -D warnings
