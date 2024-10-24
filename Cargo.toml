@@ -6,7 +6,7 @@ edition = "2021"
 license = "MIT"
 readme = "README.md"
 authors = ["Slavik Pastushenko <slavpas@gmail.com>"]
-exclude = [".github/**"]
+exclude = [".github/**", "examples/**"]
 documentation = "https://docs.rs/graph-algorithms-rs"
 repository = "https://github.com/slavik-pastushenko/graph-algorithms-rs"
 

@@ -38,6 +38,14 @@ The Floyd-Warshall algorithm finds shortest paths between all pairs of vertices 
 
 This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in 100% safe Rust.
 
+## Usage
+
+The `examples` directory contains example implementations of various graph algorithms:
+
+```rust
+use graph_algorithms::{Dijkstra, GraphAlgorithm};
+```
+
 ## Contributing
 
 Build the application:
