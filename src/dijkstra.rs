@@ -170,6 +170,15 @@ mod tests {
     use super::*;
 
     #[test]
+    fn test_new() {
+        let dijkstra = Dijkstra::new();
+        let dijkstra_default = Dijkstra::default();
+
+        assert_eq!(dijkstra.graph.len(), 0);
+        assert_eq!(dijkstra_default.graph.len(), 0);
+    }
+
+    #[test]
     fn test_run() {
         let mut dijkstra = Dijkstra::new();
         let nodes = vec![
