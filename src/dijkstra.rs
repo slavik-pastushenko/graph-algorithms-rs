@@ -56,13 +56,23 @@ impl PartialOrd for State {
     }
 }
 
+impl Default for Dijkstra {
+    /// Create a new default instance of Dijkstra's Algorithm.
+    ///
+    /// # Returns
+    ///
+    /// A new default instance of Dijkstra's Algorithm.
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Dijkstra {
     /// Create a new instance of Dijkstra's Algorithm.
     ///
     /// # Returns
     ///
     /// A new instance of Dijkstra's Algorithm.
-    #[cfg(test)]
     pub fn new() -> Self {
         Dijkstra {
             graph: HashMap::new(),
@@ -75,7 +85,6 @@ impl Dijkstra {
     ///
     /// - `node`: Node of the graph.
     /// - `edges`: Edges of the node.
-    #[cfg(test)]
     pub fn set_node(&mut self, node: usize, edges: Vec<(usize, usize)>) {
         self.graph.insert(node, edges);
     }
@@ -85,7 +94,6 @@ impl Dijkstra {
     /// # Arguments
     ///
     /// - `nodes`: Vector of nodes and their edges.
-    #[cfg(test)]
     pub fn set_nodes(&mut self, nodes: Vec<(usize, Vec<(usize, usize)>)>) {
         for (node, edges) in nodes {
             self.graph.insert(node, edges);

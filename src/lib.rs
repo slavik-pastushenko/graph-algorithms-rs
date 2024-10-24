@@ -1,6 +1,8 @@
 #![forbid(unsafe_code)]
 
-mod dijkstra;
+pub mod dijkstra;
+
+pub use dijkstra::*;
 
 /// A trait for graph search algorithms.
 pub trait GraphAlgorithm {

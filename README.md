@@ -7,6 +7,10 @@ Contributions are welcome to expand the set of algorithms and improve existing i
 ## Reference implementation
 
 [![test](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml/badge.svg)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/test.yml)
+[![release](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/release.yml/badge.svg?event=workflow_dispatch)](https://github.com/slavik-pastushenko/graph-algorithms-rs/actions/workflows/release.yml)
+[![docs](https://docs.rs/graph-algorithms-cli/badge.svg)](https://docs.rs/graph-algorithms-cli)
+[![crate](https://img.shields.io/crates/v/graph-algorithms-cli.svg)](https://crates.io/crates/graph-algorithms-cli)
+![downloads](https://img.shields.io/crates/d/graph-algorithms-cli)
 [![codecov](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs/graph/badge.svg?token=9EL0F6725A)](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs)
 [![License](https://img.shields.io/github/license/slavik-pastushenko/graph-algorithms-rs)](https://github.com/slavik-pastushenko/graph-algorithms-rs/blob/main/LICENSE)
 
