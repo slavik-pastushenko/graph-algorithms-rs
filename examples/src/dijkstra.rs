@@ -8,9 +8,7 @@ pub fn run() -> Vec<usize> {
         (2, vec![]),
     ]);
 
-    let result = dijkstra.run(0);
-
-    return result;
+    dijkstra.run(0)
 }
 
 #[cfg(test)]
