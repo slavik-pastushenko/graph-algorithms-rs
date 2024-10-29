@@ -51,3 +51,16 @@ pub trait GraphAlgorithm {
     /// Result containing a vector of shortest paths, or an error if applicable.
     fn run(&self, start: Self::Node) -> Result<Vec<Self::Weight>, GraphError>;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_graph_error() {
+        assert_eq!(
+            format!("{}", GraphError::NegativeWeightCycle),
+            "NegativeWeightCycle"
+        );
+    }
+}
