@@ -28,7 +28,7 @@ BFS explores the graph level by level, starting from a given node. It is used fo
 ### Depth-First Search (DFS) (TODO)
 DFS explores as far as possible along each branch before backtracking. It is used for pathfinding and topological sorting.
 
-### Bellman-Ford Algorithm (TODO)
+### Bellman-Ford Algorithm
 The Bellman-Ford algorithm computes shortest paths from a single source vertex to all of the other vertices in a weighted digraph. It can handle graphs with negative weight edges.
 
 ### Floyd-Warshall Algorithm (TODO)
@@ -43,7 +43,7 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 The `examples` directory contains example implementations of various graph algorithms:
 
 ```rust
-use graph_algorithms::{Dijkstra, GraphAlgorithm};
+use graph_algorithms::{DijkstraAlgorithm, GraphAlgorithm};
 ```
 
 ## Contributing

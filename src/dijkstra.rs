@@ -3,14 +3,14 @@ use std::{
     collections::{BinaryHeap, HashMap},
 };
 
-use crate::GraphAlgorithm;
+use crate::{GraphAlgorithm, GraphError};
 
 /// Dijkstra's Algorithm.
-/// Finds the shortest path from a starting node to all other nodes in a weighted graph.
-#[derive(Debug)]
-pub struct Dijkstra {
+/// Find the shortest path from a starting node to all other nodes in a weighted graph.
+#[derive(Debug, Clone)]
+pub struct DijkstraAlgorithm {
     /// Graph to search.
-    graph: HashMap<usize, Vec<(usize, usize)>>,
+    pub graph: HashMap<usize, Vec<(usize, usize)>>,
 }
 
 /// State of the algorithm.
@@ -56,25 +56,25 @@ impl PartialOrd for State {
     }
 }
 
-impl Default for Dijkstra {
+impl Default for DijkstraAlgorithm {
     /// Create a new default instance of Dijkstra's Algorithm.
     ///
     /// # Returns
     ///
-    /// A new default instance of Dijkstra's Algorithm.
+    /// New default instance of Dijkstra's Algorithm.
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl Dijkstra {
+impl DijkstraAlgorithm {
     /// Create a new instance of Dijkstra's Algorithm.
     ///
     /// # Returns
     ///
-    /// A new instance of Dijkstra's Algorithm.
+    /// New instance of Dijkstra's Algorithm.
     pub fn new() -> Self {
-        Dijkstra {
+        DijkstraAlgorithm {
             graph: HashMap::new(),
         }
     }
@@ -101,7 +101,13 @@ impl Dijkstra {
     }
 }
 
-impl GraphAlgorithm for Dijkstra {
+impl GraphAlgorithm for DijkstraAlgorithm {
+    /// Type of node.
+    type Node = usize;
+
+    /// Type of weight.
+    type Weight = usize;
+
     /// Run Dijkstra's Algorithm.
     ///
     /// # Arguments
@@ -110,8 +116,8 @@ impl GraphAlgorithm for Dijkstra {
     ///
     /// # Returns
     ///
-    /// A vector of the shortest path from the starting node to all other nodes.
-    fn run(&self, start: usize) -> Vec<usize> {
+    /// Vector of the shortest path from the starting node to all other nodes.
+    fn run(&self, start: Self::Node) -> Result<Vec<Self::Weight>, GraphError> {
         let mut priority_queue = BinaryHeap::new();
         let mut distances = HashMap::new();
         let mut result = vec![usize::MAX; self.graph.len()];
@@ -161,7 +167,7 @@ impl GraphAlgorithm for Dijkstra {
             }
         }
 
-        result
+        Ok(result)
     }
 }
 
@@ -171,16 +177,16 @@ mod tests {
 
     #[test]
     fn test_new() {
-        let dijkstra = Dijkstra::new();
-        let dijkstra_default = Dijkstra::default();
+        let algorithm = DijkstraAlgorithm::new();
+        let dijkstra_default = DijkstraAlgorithm::default();
 
-        assert_eq!(dijkstra.graph.len(), 0);
+        assert_eq!(algorithm.graph.len(), 0);
         assert_eq!(dijkstra_default.graph.len(), 0);
     }
 
     #[test]
     fn test_run() {
-        let mut dijkstra = Dijkstra::new();
+        let mut algorithm = DijkstraAlgorithm::new();
         let nodes = vec![
             (0, vec![(1, 1), (2, 4), (3, 7)]),
             (1, vec![(2, 2), (3, 5), (4, 12)]),
@@ -203,125 +209,125 @@ mod tests {
             (18, vec![(19, 1)]),
             (19, vec![]),
         ];
-        dijkstra.set_nodes(nodes);
+        algorithm.set_nodes(nodes);
 
         assert_eq!(
-            dijkstra.run(0),
+            algorithm.run(0).unwrap(),
             vec![0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28]
         );
     }
 
     #[test]
     fn test_run_single_node_graph() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![(0, vec![])]);
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![(0, vec![])]);
 
-        assert_eq!(dijkstra.run(0), vec![0]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0]);
     }
 
     #[test]
     fn test_run_two_node_graph() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_node(0, vec![(1, 1)]);
-        dijkstra.set_node(1, vec![]);
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_node(0, vec![(1, 1)]);
+        algorithm.set_node(1, vec![]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1]);
     }
 
     #[test]
     fn test_run_disconnected_graph() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![(0, vec![]), (1, vec![])]);
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![(0, vec![]), (1, vec![])]);
 
-        assert_eq!(dijkstra.run(0), vec![0, usize::MAX]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, usize::MAX]);
     }
 
     #[test]
     fn test_run_simple_path() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![(0, vec![(1, 1)]), (1, vec![(2, 1)]), (2, vec![])]);
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![(0, vec![(1, 1)]), (1, vec![(2, 1)]), (2, vec![])]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
     fn test_run_multiple_paths() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1), (2, 4)]),
             (1, vec![(2, 2)]),
             (2, vec![]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 3]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 3]);
     }
 
     #[test]
     fn test_run_graph_with_cycle() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1)]),
             (1, vec![(2, 1)]),
             (2, vec![(0, 1)]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
     fn test_run_graph_with_multiple_shortest_paths() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1), (2, 1)]),
             (1, vec![(2, 1)]),
             (2, vec![]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 1]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 1]);
     }
 
     #[test]
     fn test_run_large_weights() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1000)]),
             (1, vec![(2, 1000)]),
             (2, vec![]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1000, 2000]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1000, 2000]);
     }
 
     #[test]
     fn test_run_no_edges() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![(0, vec![]), (1, vec![]), (2, vec![])]);
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![(0, vec![]), (1, vec![]), (2, vec![])]);
 
-        assert_eq!(dijkstra.run(0), vec![0, usize::MAX, usize::MAX]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, usize::MAX, usize::MAX]);
     }
 
     #[test]
     fn test_run_multiple_edges_to_same_node() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1), (1, 2)]),
             (1, vec![(2, 1)]),
             (2, vec![]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
     fn test_run_graph_with_isolated_node() {
-        let mut dijkstra = Dijkstra::new();
-        dijkstra.set_nodes(vec![
+        let mut algorithm = DijkstraAlgorithm::new();
+        algorithm.set_nodes(vec![
             (0, vec![(1, 1)]),
             (1, vec![(2, 1)]),
             (2, vec![]),
             (3, vec![]),
         ]);
 
-        assert_eq!(dijkstra.run(0), vec![0, 1, 2, usize::MAX]);
+        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2, usize::MAX]);
     }
 }
