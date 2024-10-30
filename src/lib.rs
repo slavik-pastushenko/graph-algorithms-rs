@@ -2,10 +2,12 @@
 
 use std::{error::Error, fmt};
 
+#[cfg(feature = "bellman_ford")]
 pub mod bellman_ford;
-pub mod dijkstra;
-
 pub use bellman_ford::*;
+
+#[cfg(feature = "dijkstra")]
+pub mod dijkstra;
 pub use dijkstra::*;
 
 /// Error type for graph algorithms.

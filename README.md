@@ -46,6 +46,19 @@ The `examples` directory contains example implementations of various graph algor
 use graph_algorithms::{DijkstraAlgorithm, GraphAlgorithm};
 ```
 
+## Features
+
+This crate provides optional features for different algorithms.
+
+By default, all features are enabled. You can customize the features when adding the dependency in your `Cargo.toml`:
+
+```toml
+[dependencies]
+graph-algorithms-rs = { version = "x.x.x", default-features = false, features = ["dijkstra"] }
+```
+
+For a detailed list of available algorithms, refer to the [Algorithms](#algorithms) section.
+
 ## Contributing
 
 Build the application:
