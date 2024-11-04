@@ -8,7 +8,7 @@ pub fn run() -> Vec<usize> {
         (2, vec![]),
     ]);
 
-    algorithm.run(0).unwrap_or_default()
+    algorithm.run(Some(0)).unwrap_or_default()
 }
 
 #[cfg(test)]

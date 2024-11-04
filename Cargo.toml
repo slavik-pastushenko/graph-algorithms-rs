@@ -11,9 +11,10 @@ documentation = "https://docs.rs/graph-algorithms-rs"
 repository = "https://github.com/slavik-pastushenko/graph-algorithms-rs"
 
 [features]
-default = ["bellman_ford", "dijkstra"]
+default = ["bellman_ford", "dijkstra", "floyd_warshall"]
 bellman_ford = []
 dijkstra = []
+floyd_warshall = []
 
 [lib]
 name = "graph_algorithms"

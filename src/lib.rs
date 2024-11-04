@@ -10,11 +10,18 @@ pub use bellman_ford::*;
 pub mod dijkstra;
 pub use dijkstra::*;
 
+#[cfg(feature = "floyd_warshall")]
+pub mod floyd_warshall;
+pub use floyd_warshall::*;
+
 /// Error type for graph algorithms.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum GraphError {
     /// Graph contains a negative weight cycle.
     NegativeWeightCycle,
+
+    /// Graph does not contain a start node.
+    MissingStartNode,
 }
 
 impl Error for GraphError {}
@@ -46,12 +53,12 @@ pub trait GraphAlgorithm {
     ///
     /// # Arguments
     ///
-    /// - `start`: The starting node.
+    /// - `start`: Starting node, if applicable.
     ///
     /// # Returns
     ///
-    /// Result containing a vector of shortest paths, or an error if applicable.
-    fn run(&self, start: Self::Node) -> Result<Vec<Self::Weight>, GraphError>;
+    /// Result containing the weight of the shortest path, or an error.
+    fn run(&self, start: Option<Self::Node>) -> Result<Self::Weight, GraphError>;
 }
 
 #[cfg(test)]
@@ -63,6 +70,11 @@ mod tests {
         assert_eq!(
             format!("{}", GraphError::NegativeWeightCycle),
             "NegativeWeightCycle"
+        );
+
+        assert_eq!(
+            format!("{}", GraphError::MissingStartNode),
+            "MissingStartNode"
         );
     }
 }

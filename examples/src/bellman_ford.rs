@@ -6,7 +6,7 @@ pub fn run() -> Vec<i32> {
     algorithm.add_edge(1, vec![(2, 1), (3, 2)]);
     algorithm.add_edge(2, vec![(3, 5)]);
 
-    algorithm.run(0).unwrap_or_default()
+    algorithm.run(Some(0)).unwrap_or_default()
 }
 
 #[cfg(test)]

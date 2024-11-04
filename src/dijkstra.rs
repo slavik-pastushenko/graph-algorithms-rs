@@ -106,18 +106,20 @@ impl GraphAlgorithm for DijkstraAlgorithm {
     type Node = usize;
 
     /// Type of weight.
-    type Weight = usize;
+    type Weight = Vec<usize>;
 
     /// Run Dijkstra's Algorithm.
     ///
     /// # Arguments
     ///
-    /// - `start`: The starting node.
+    /// - `start`: Starting node.
     ///
     /// # Returns
     ///
     /// Vector of the shortest path from the starting node to all other nodes.
-    fn run(&self, start: Self::Node) -> Result<Vec<Self::Weight>, GraphError> {
+    fn run(&self, start: Option<Self::Node>) -> Result<Self::Weight, GraphError> {
+        let start = start.ok_or(GraphError::MissingStartNode)?;
+
         let mut priority_queue = BinaryHeap::new();
         let mut distances = HashMap::new();
         let mut result = vec![usize::MAX; self.graph.len()];
@@ -178,10 +180,17 @@ mod tests {
     #[test]
     fn test_new() {
         let algorithm = DijkstraAlgorithm::new();
-        let dijkstra_default = DijkstraAlgorithm::default();
+        let algorithm_default = DijkstraAlgorithm::default();
 
         assert_eq!(algorithm.graph.len(), 0);
-        assert_eq!(dijkstra_default.graph.len(), 0);
+        assert_eq!(algorithm_default.graph.len(), 0);
+    }
+
+    #[test]
+    fn test_missing_start_node() {
+        let algorithm = DijkstraAlgorithm::new();
+
+        assert_eq!(algorithm.run(None), Err(GraphError::MissingStartNode));
     }
 
     #[test]
@@ -212,7 +221,7 @@ mod tests {
         algorithm.set_nodes(nodes);
 
         assert_eq!(
-            algorithm.run(0).unwrap(),
+            algorithm.run(Some(0)).unwrap(),
             vec![0, 1, 3, 4, 6, 7, 9, 10, 12, 13, 15, 16, 18, 19, 21, 22, 24, 25, 27, 28]
         );
     }
@@ -222,7 +231,7 @@ mod tests {
         let mut algorithm = DijkstraAlgorithm::new();
         algorithm.set_nodes(vec![(0, vec![])]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0]);
     }
 
     #[test]
@@ -231,7 +240,7 @@ mod tests {
         algorithm.set_node(0, vec![(1, 1)]);
         algorithm.set_node(1, vec![]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1]);
     }
 
     #[test]
@@ -239,7 +248,7 @@ mod tests {
         let mut algorithm = DijkstraAlgorithm::new();
         algorithm.set_nodes(vec![(0, vec![]), (1, vec![])]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, usize::MAX]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, usize::MAX]);
     }
 
     #[test]
@@ -247,7 +256,7 @@ mod tests {
         let mut algorithm = DijkstraAlgorithm::new();
         algorithm.set_nodes(vec![(0, vec![(1, 1)]), (1, vec![(2, 1)]), (2, vec![])]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
@@ -259,7 +268,7 @@ mod tests {
             (2, vec![]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 3]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 3]);
     }
 
     #[test]
@@ -271,7 +280,7 @@ mod tests {
             (2, vec![(0, 1)]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
@@ -283,7 +292,7 @@ mod tests {
             (2, vec![]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 1]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 1]);
     }
 
     #[test]
@@ -295,7 +304,7 @@ mod tests {
             (2, vec![]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1000, 2000]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1000, 2000]);
     }
 
     #[test]
@@ -303,7 +312,10 @@ mod tests {
         let mut algorithm = DijkstraAlgorithm::new();
         algorithm.set_nodes(vec![(0, vec![]), (1, vec![]), (2, vec![])]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, usize::MAX, usize::MAX]);
+        assert_eq!(
+            algorithm.run(Some(0)).unwrap(),
+            vec![0, usize::MAX, usize::MAX]
+        );
     }
 
     #[test]
@@ -315,7 +327,7 @@ mod tests {
             (2, vec![]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 2]);
     }
 
     #[test]
@@ -328,6 +340,6 @@ mod tests {
             (3, vec![]),
         ]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 1, 2, usize::MAX]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 1, 2, usize::MAX]);
     }
 }

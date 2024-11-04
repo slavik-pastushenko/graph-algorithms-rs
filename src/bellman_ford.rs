@@ -88,18 +88,20 @@ impl GraphAlgorithm for BellmanFordAlgorithm {
     type Node = isize;
 
     /// Type of weight.
-    type Weight = i32;
+    type Weight = Vec<i32>;
 
     /// Run Bellman-Ford Algorithm.
     ///
     /// # Arguments
     ///
-    /// - `start`: The starting node.
+    /// - `start`: Starting node.
     ///
     /// # Returns
     ///
     /// Result containing a vector of shortest paths, or an error if applicable.
-    fn run(&self, start: Self::Node) -> Result<Vec<Self::Weight>, GraphError> {
+    fn run(&self, start: Option<Self::Node>) -> Result<Self::Weight, GraphError> {
+        let start = start.ok_or(GraphError::MissingStartNode)?;
+
         let mut distances = vec![i32::MAX; self.total_vertices];
         distances[start as usize] = 0;
 
@@ -147,6 +149,13 @@ mod tests {
 
         assert_eq!(algorithm.edges.len(), 0);
         assert_eq!(algorithm_default.edges.len(), 0);
+    }
+
+    #[test]
+    fn test_missing_start_node() {
+        let algorithm = BellmanFordAlgorithm::new();
+
+        assert_eq!(algorithm.run(None), Err(GraphError::MissingStartNode));
     }
 
     #[test]
@@ -215,7 +224,7 @@ mod tests {
             algorithm.add_edge(source, vec![(destination, weight)]);
         }
 
-        let result = algorithm.run(0).unwrap();
+        let result = algorithm.run(Some(0)).unwrap();
 
         assert_eq!(result[0], 0);
 
@@ -233,7 +242,7 @@ mod tests {
         let mut algorithm = BellmanFordAlgorithm::new();
         algorithm.add_edge(0, vec![]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0]);
     }
 
     #[test]
@@ -243,7 +252,7 @@ mod tests {
         algorithm.add_edge(1, vec![(2, 1), (3, 2)]);
         algorithm.add_edge(2, vec![(3, 5)]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 4, 3, 6]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 4, 3, 6]);
     }
 
     #[test]
@@ -253,7 +262,7 @@ mod tests {
         algorithm.add_edge(1, vec![(2, -2), (3, 2)]);
         algorithm.add_edge(2, vec![(3, 3)]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 4, 2, 5]);
+        assert_eq!(algorithm.run(Some(0)).unwrap(), vec![0, 4, 2, 5]);
     }
 
     #[test]
@@ -265,7 +274,7 @@ mod tests {
         algorithm.add_edge(3, vec![]);
 
         assert_eq!(
-            algorithm.run(0).unwrap(),
+            algorithm.run(Some(0)).unwrap(),
             vec![0, i32::MAX, i32::MAX, i32::MAX]
         );
     }
@@ -277,7 +286,7 @@ mod tests {
         algorithm.add_edge(1, vec![(2, 1), (3, 2)]);
         algorithm.add_edge(2, vec![(3, 5)]);
 
-        assert_eq!(algorithm.run(1).unwrap(), vec![i32::MAX, 0, 1, 2]);
+        assert_eq!(algorithm.run(Some(1)).unwrap(), vec![i32::MAX, 0, 1, 2]);
     }
 
     #[test]
@@ -286,7 +295,10 @@ mod tests {
         algorithm.add_edge(0, vec![(1, 4)]);
         algorithm.add_edge(2, vec![(3, 5)]);
 
-        assert_eq!(algorithm.run(0).unwrap(), vec![0, 4, i32::MAX, i32::MAX]);
+        assert_eq!(
+            algorithm.run(Some(0)).unwrap(),
+            vec![0, 4, i32::MAX, i32::MAX]
+        );
     }
 
     #[test]
@@ -298,18 +310,18 @@ mod tests {
             (2, vec![(0, -1)]),
         ]);
 
-        assert_eq!(algorithm.run(0), Err(GraphError::NegativeWeightCycle));
+        assert_eq!(algorithm.run(Some(0)), Err(GraphError::NegativeWeightCycle));
     }
 
     #[test]
-    fn test_early_exit_no_updates() {
+    fn test_run_early_exit_no_updates() {
         let mut algorithm = BellmanFordAlgorithm::new();
         algorithm.add_edge(0, vec![(1, 2)]);
         algorithm.add_edge(1, vec![(2, 3)]);
         algorithm.add_edge(2, vec![(3, 4)]);
         algorithm.add_edge(3, vec![(4, 1)]);
 
-        let result = algorithm.run(0).unwrap();
+        let result = algorithm.run(Some(0)).unwrap();
 
         assert_eq!(result[0], 0);
         assert_eq!(result[1], 2);
@@ -319,14 +331,14 @@ mod tests {
     }
 
     #[test]
-    fn test_early_exit_with_no_negative_cycle() {
+    fn test_run_early_exit_with_no_negative_cycle() {
         let mut algorithm = BellmanFordAlgorithm::new();
         algorithm.add_edge(0, vec![(1, 2)]);
         algorithm.add_edge(1, vec![(2, 3)]);
         algorithm.add_edge(2, vec![(3, -5)]);
         algorithm.add_edge(3, vec![(4, 1)]);
 
-        let result = algorithm.run(0).unwrap();
+        let result = algorithm.run(Some(0)).unwrap();
 
         assert_eq!(result[0], 0);
         assert_eq!(result[1], 2);
@@ -336,12 +348,12 @@ mod tests {
     }
 
     #[test]
-    fn test_early_exit_with_negative_cycle() {
+    fn test_run_early_exit_with_negative_cycle() {
         let mut algorithm = BellmanFordAlgorithm::new();
         algorithm.add_edge(0, vec![(1, 1)]);
         algorithm.add_edge(1, vec![(2, -2)]);
         algorithm.add_edge(2, vec![(0, -1)]); // Negative cycle here
 
-        assert_eq!(algorithm.run(0), Err(GraphError::NegativeWeightCycle));
+        assert_eq!(algorithm.run(Some(0)), Err(GraphError::NegativeWeightCycle));
     }
 }
