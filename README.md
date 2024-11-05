@@ -14,7 +14,7 @@ Contributions are welcome to expand the set of algorithms and improve existing i
 [![codecov](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs/graph/badge.svg?token=9EL0F6725A)](https://codecov.io/gh/slavik-pastushenko/graph-algorithms-rs)
 [![License](https://img.shields.io/github/license/slavik-pastushenko/graph-algorithms-rs)](https://github.com/slavik-pastushenko/graph-algorithms-rs/blob/main/LICENSE)
 
-| Name            | Description       | Example       |
+| Algorithm       | Description       | Example       |
 |-----------------|-------------------|---------------|
 | Dijkstra's      | Finds the shortest path from a starting node to all other nodes in a weighted graph. It uses a priority queue to efficiently select the next node with the smallest distance. | ![Dijkstra's](https://upload.wikimedia.org/wikipedia/commons/5/57/Dijkstra_Animation.gif) |
 | Bellman-Ford    | Computes shortest paths from a single source vertex to all of the other vertices in a weighted digraph. It can handle graphs with negative weight edges. | ![Bellman-Ford](https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Bellman%E2%80%93Ford_algorithm_example.gif/440px-Bellman%E2%80%93Ford_algorithm_example.gif) |
