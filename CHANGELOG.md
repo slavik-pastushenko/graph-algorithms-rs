@@ -2,11 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.9] - 2024-12-27
+## [0.1.10] - 2024-12-27
 
 ### ⚙️ Miscellaneous Tasks
 
 - Update rust version
+- Init CHANGELOG.md
 
 ## [0.1.9] - 2024-11-05
 
